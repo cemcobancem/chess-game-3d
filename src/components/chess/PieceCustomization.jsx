@@ -17,7 +17,7 @@ const STYLES = [
   { id: 'minimal', name: 'Minimal', icon: '●' }
 ];
 
-export default function PieceCustomization({ material, style, onMaterialChange, onStyleChange }) {
+export default function PieceCustomization({ material, style, boardType, onMaterialChange, onStyleChange, onBoardTypeChange }) {
   return (
     <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-xl rounded-2xl p-5 border border-white/10 shadow-2xl">
       <h3 className="text-white/90 font-semibold mb-4 text-sm uppercase tracking-wider">Piece Customization</h3>

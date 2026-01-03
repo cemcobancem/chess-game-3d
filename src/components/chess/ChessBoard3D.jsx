@@ -461,7 +461,8 @@ export default function ChessBoard3D({
   lastMove,
   isThinking,
   material = 'wood',
-  style = 'classic'
+  style = 'classic',
+  boardType = 'classic'
 }) {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -597,20 +598,56 @@ export default function ChessBoard3D({
     }
   }, [material]);
 
+  // Get board colors based on type
+  const getBoardMaterials = useCallback(() => {
+    switch (boardType) {
+      case 'marble':
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.3, roughness: 0.4 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.3, roughness: 0.4 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.4, roughness: 0.5 })
+        };
+      case 'green':
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0xf0d9b5, metalness: 0.1, roughness: 0.8 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0x769656, metalness: 0.1, roughness: 0.8 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x4a5c3a, metalness: 0.2, roughness: 0.6 })
+        };
+      case 'blue':
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0xdee3e6, metalness: 0.1, roughness: 0.7 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0x8ca2ad, metalness: 0.1, roughness: 0.7 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x4a6372, metalness: 0.2, roughness: 0.6 })
+        };
+      case 'dark':
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0x4a4a4a, metalness: 0.2, roughness: 0.7 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.2, roughness: 0.7 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.3, roughness: 0.5 })
+        };
+      case 'cream':
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0xfff8dc, metalness: 0.1, roughness: 0.8 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0xd2691e, metalness: 0.1, roughness: 0.8 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x8b4513, metalness: 0.2, roughness: 0.6 })
+        };
+      default: // classic
+        return {
+          light: new THREE.MeshStandardMaterial({ color: 0xe8d4b8, metalness: 0.1, roughness: 0.8 }),
+          dark: new THREE.MeshStandardMaterial({ color: 0x8b6914, metalness: 0.1, roughness: 0.8 }),
+          edge: new THREE.MeshStandardMaterial({ color: 0x4a3728, metalness: 0.2, roughness: 0.6 })
+        };
+    }
+  }, [boardType]);
+
   // Create materials
-  const materials = useMemo(() => ({
-    whitePiece: getPieceMaterials().white,
-    blackPiece: getPieceMaterials().black,
-    lightSquare: new THREE.MeshStandardMaterial({ 
-      color: 0xe8d4b8, 
-      metalness: 0.1, 
-      roughness: 0.8 
-    }),
-    darkSquare: new THREE.MeshStandardMaterial({ 
-      color: 0x8b6914, 
-      metalness: 0.1, 
-      roughness: 0.8 
-    }),
+  const materials = useMemo(() => {
+    const boardMats = getBoardMaterials();
+    return {
+      whitePiece: getPieceMaterials().white,
+      blackPiece: getPieceMaterials().black,
+      lightSquare: boardMats.light,
+      darkSquare: boardMats.dark,
     selected: new THREE.MeshStandardMaterial({ 
       color: 0x6c63ff, 
       metalness: 0.2, 
@@ -632,12 +669,9 @@ export default function ChessBoard3D({
       transparent: true,
       opacity: 0.5
     }),
-    boardEdge: new THREE.MeshStandardMaterial({ 
-      color: 0x4a3728, 
-      metalness: 0.2, 
-      roughness: 0.6 
-    })
-  }), [getPieceMaterials]);
+    boardEdge: boardMats.edge
+    };
+  }, [getPieceMaterials, getBoardMaterials]);
 
   // Initialize scene
   useEffect(() => {

@@ -43,6 +43,7 @@ export default function ChessPage() {
   const [boardHistory, setBoardHistory] = useState([]);
   const [pieceMaterial, setPieceMaterial] = useState('wood');
   const [pieceStyle, setPieceStyle] = useState('classic');
+  const [boardType, setBoardType] = useState('classic');
   const [capturedPieces, setCapturedPieces] = useState([]);
   
   const playerColor = COLORS.WHITE;
@@ -340,7 +341,8 @@ export default function ChessPage() {
                 isThinking={isThinking}
                 material={pieceMaterial}
                 style={pieceStyle}
-              />
+                boardType={boardType}
+                />
             </div>
             
             {/* Quick controls for mobile */}
@@ -389,8 +391,10 @@ export default function ChessPage() {
             <PieceCustomization
               material={pieceMaterial}
               style={pieceStyle}
+              boardType={boardType}
               onMaterialChange={setPieceMaterial}
               onStyleChange={setPieceStyle}
+              onBoardTypeChange={setBoardType}
             />
             
             <GameControls
