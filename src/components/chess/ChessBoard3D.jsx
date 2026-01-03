@@ -737,6 +737,60 @@ export default function ChessBoard3D({
     edge.receiveShadow = true;
     boardGroup.add(edge);
 
+    // Add board notation (letters and numbers)
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 256;
+    canvas.height = 256;
+    
+    const createLabel = (text) => {
+      context.clearRect(0, 0, 256, 256);
+      context.fillStyle = '#ffffff';
+      context.font = 'bold 180px Arial';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, 128, 128);
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      return texture;
+    };
+    
+    // Add letters (a-h) at the bottom
+    const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    letters.forEach((letter, i) => {
+      const texture = createLabel(letter);
+      const labelMaterial = new THREE.MeshBasicMaterial({ 
+        map: texture, 
+        transparent: true,
+        opacity: 0.6
+      });
+      const labelGeometry = new THREE.PlaneGeometry(0.4, 0.4);
+      const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
+      labelMesh.position.x = (i - 3.5) * SQUARE_SIZE;
+      labelMesh.position.z = 4.4;
+      labelMesh.position.y = 0.02;
+      labelMesh.rotation.x = -Math.PI / 2;
+      boardGroup.add(labelMesh);
+    });
+    
+    // Add numbers (1-8) on the left
+    for (let i = 0; i < 8; i++) {
+      const texture = createLabel((8 - i).toString());
+      const labelMaterial = new THREE.MeshBasicMaterial({ 
+        map: texture, 
+        transparent: true,
+        opacity: 0.6
+      });
+      const labelGeometry = new THREE.PlaneGeometry(0.4, 0.4);
+      const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
+      labelMesh.position.x = -4.4;
+      labelMesh.position.z = (i - 3.5) * SQUARE_SIZE;
+      labelMesh.position.y = 0.02;
+      labelMesh.rotation.x = -Math.PI / 2;
+      boardGroup.add(labelMesh);
+    }
+
     scene.add(boardGroup);
 
     // Animation loop

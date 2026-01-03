@@ -6,6 +6,7 @@ import GameStatus from '@/components/chess/GameStatus';
 import MoveHistory from '@/components/chess/MoveHistory';
 import PawnPromotion from '@/components/chess/PawnPromotion';
 import PieceCustomization from '@/components/chess/PieceCustomization';
+import CapturedPieces from '@/components/chess/CapturedPieces';
 import {
   createInitialBoard,
   cloneBoard,
@@ -42,6 +43,7 @@ export default function ChessPage() {
   const [boardHistory, setBoardHistory] = useState([]);
   const [pieceMaterial, setPieceMaterial] = useState('wood');
   const [pieceStyle, setPieceStyle] = useState('classic');
+  const [capturedPieces, setCapturedPieces] = useState([]);
   
   const playerColor = COLORS.WHITE;
   const aiColor = COLORS.BLACK;
@@ -76,13 +78,18 @@ export default function ChessPage() {
     if (!piece) return;
 
     // Save board state for undo
-    setBoardHistory(prev => [...prev, { board: cloneBoard(board), gameState: { ...gameState }, turn: currentTurn }]);
+    setBoardHistory(prev => [...prev, { board: cloneBoard(board), gameState: { ...gameState }, turn: currentTurn, captured: capturedPieces }]);
 
     const newBoard = cloneBoard(board);
     const newGameState = { ...gameState };
     
     // Track captured piece
     let captured = newBoard[toRow][toCol];
+    
+    // Add to captured pieces if there was a capture
+    if (captured) {
+      setCapturedPieces(prev => [...prev, captured]);
+    }
 
     // Handle castling
     if (moveInfo.castle) {
@@ -102,6 +109,9 @@ export default function ChessPage() {
       newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
       newBoard[fromRow][fromCol] = null;
       captured = newBoard[fromRow][toCol];
+      if (captured) {
+        setCapturedPieces(prev => [...prev, captured]);
+      }
       newBoard[fromRow][toCol] = null;
     }
     // Normal move
@@ -183,7 +193,7 @@ export default function ChessPage() {
     setValidMoves([]);
     setLastMove({ fromRow, fromCol, toRow, toCol });
     setMoveHistory(prev => [...prev, move]);
-  }, [board, gameState, playerColor]);
+  }, [board, gameState, playerColor, capturedPieces]);
 
   const handlePromotion = useCallback((pieceType) => {
     if (!showPromotion) return;
@@ -252,6 +262,7 @@ export default function ChessPage() {
     setLastMove(null);
     setGameStatus({ status: 'playing', winner: null });
     setBoardHistory([]);
+    setCapturedPieces([]);
   }, []);
 
   const handleUndo = useCallback(() => {
@@ -261,6 +272,7 @@ export default function ChessPage() {
       setBoard(prevState.board);
       setGameState(prevState.gameState);
       setCurrentTurn(prevState.turn);
+      setCapturedPieces(prevState.captured || []);
       setBoardHistory(prev => prev.slice(0, -2));
       setMoveHistory(prev => prev.slice(0, -2));
       setSelectedSquare(null);
@@ -306,7 +318,16 @@ export default function ChessPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr_320px] lg:grid-cols-[1fr_320px] gap-6">
+          {/* Left Sidebar - Captured White Pieces */}
+          <div className="hidden xl:block">
+            <CapturedPieces 
+              capturedPieces={capturedPieces} 
+              color={COLORS.WHITE}
+              label="Captured White"
+            />
+          </div>
+
           {/* Chess Board */}
           <div className="relative">
             <div className="aspect-square w-full max-w-[700px] mx-auto rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 border border-white/10">
@@ -334,8 +355,31 @@ export default function ChessPage() {
             </div>
           </div>
 
-          {/* Side Panel */}
+          {/* Right Sidebar */}
           <div className="space-y-4 lg:space-y-6">
+            {/* Captured pieces for mobile/tablet */}
+            <div className="xl:hidden grid grid-cols-2 gap-4">
+              <CapturedPieces 
+                capturedPieces={capturedPieces} 
+                color={COLORS.WHITE}
+                label="Captured White"
+              />
+              <CapturedPieces 
+                capturedPieces={capturedPieces} 
+                color={COLORS.BLACK}
+                label="Captured Black"
+              />
+            </div>
+
+            {/* Captured Black pieces for desktop */}
+            <div className="hidden xl:block">
+              <CapturedPieces 
+                capturedPieces={capturedPieces} 
+                color={COLORS.BLACK}
+                label="Captured Black"
+              />
+            </div>
+
             <GameStatus
               currentTurn={currentTurn}
               gameStatus={gameStatus}
