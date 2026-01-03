@@ -5,7 +5,7 @@ import { PIECES, COLORS } from './ChessEngine';
 
 const BOARD_SIZE = 8;
 const SQUARE_SIZE = 1;
-const PIECE_SCALE = 0.35;
+const PIECE_SCALE = 0.55;
 
 // 3D piece geometries using basic shapes
 const createPieceGeometry = (type, style = 'classic') => {
@@ -163,21 +163,21 @@ function createPawnGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.35, 0.4, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.4, 0.45, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.15, 0.3, 0.5, 24);
+  const body = new THREE.CylinderGeometry(0.2, 0.35, 0.7, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.4;
+  bodyMesh.position.y = 0.6;
   group.add(bodyMesh);
   
   // Head
-  const head = new THREE.SphereGeometry(0.2, 24, 24);
+  const head = new THREE.SphereGeometry(0.28, 24, 24);
   const headMesh = new THREE.Mesh(head);
-  headMesh.position.y = 0.75;
+  headMesh.position.y = 1.1;
   group.add(headMesh);
   
   return mergeGeometries(group);
@@ -187,31 +187,31 @@ function createRookGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.4, 0.45, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.45, 0.5, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.3, 0.35, 0.7, 24);
+  const body = new THREE.CylinderGeometry(0.35, 0.4, 0.9, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.5;
+  bodyMesh.position.y = 0.65;
   group.add(bodyMesh);
   
   // Top
-  const top = new THREE.CylinderGeometry(0.35, 0.3, 0.2, 24);
+  const top = new THREE.CylinderGeometry(0.4, 0.35, 0.25, 24);
   const topMesh = new THREE.Mesh(top);
-  topMesh.position.y = 0.95;
+  topMesh.position.y = 1.225;
   group.add(topMesh);
   
   // Battlements
   for (let i = 0; i < 4; i++) {
-    const battlement = new THREE.BoxGeometry(0.15, 0.2, 0.15);
+    const battlement = new THREE.BoxGeometry(0.18, 0.25, 0.18);
     const battlementMesh = new THREE.Mesh(battlement);
     const angle = (i / 4) * Math.PI * 2;
-    battlementMesh.position.x = Math.cos(angle) * 0.25;
-    battlementMesh.position.z = Math.sin(angle) * 0.25;
-    battlementMesh.position.y = 1.15;
+    battlementMesh.position.x = Math.cos(angle) * 0.3;
+    battlementMesh.position.z = Math.sin(angle) * 0.3;
+    battlementMesh.position.y = 1.475;
     group.add(battlementMesh);
   }
   
@@ -222,38 +222,38 @@ function createKnightGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.4, 0.45, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.45, 0.5, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.25, 0.35, 0.4, 24);
+  const body = new THREE.CylinderGeometry(0.3, 0.4, 0.5, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.35;
+  bodyMesh.position.y = 0.45;
   group.add(bodyMesh);
   
   // Neck
-  const neck = new THREE.BoxGeometry(0.25, 0.5, 0.35);
+  const neck = new THREE.BoxGeometry(0.3, 0.65, 0.42);
   const neckMesh = new THREE.Mesh(neck);
-  neckMesh.position.y = 0.8;
+  neckMesh.position.y = 1.05;
   neckMesh.position.z = 0.05;
   neckMesh.rotation.x = -0.3;
   group.add(neckMesh);
   
   // Head
-  const head = new THREE.BoxGeometry(0.2, 0.3, 0.5);
+  const head = new THREE.BoxGeometry(0.25, 0.38, 0.6);
   const headMesh = new THREE.Mesh(head);
-  headMesh.position.y = 1.1;
-  headMesh.position.z = 0.2;
+  headMesh.position.y = 1.45;
+  headMesh.position.z = 0.25;
   headMesh.rotation.x = 0.2;
   group.add(headMesh);
   
   // Ears
-  const ear = new THREE.ConeGeometry(0.08, 0.15, 8);
+  const ear = new THREE.ConeGeometry(0.1, 0.2, 8);
   const earMesh = new THREE.Mesh(ear);
-  earMesh.position.y = 1.3;
-  earMesh.position.z = 0.1;
+  earMesh.position.y = 1.7;
+  earMesh.position.z = 0.12;
   group.add(earMesh);
   
   return mergeGeometries(group);
@@ -263,28 +263,28 @@ function createBishopGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.4, 0.45, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.45, 0.5, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.15, 0.35, 0.6, 24);
+  const body = new THREE.CylinderGeometry(0.2, 0.4, 0.8, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.45;
+  bodyMesh.position.y = 0.6;
   group.add(bodyMesh);
   
   // Mitre
-  const mitre = new THREE.SphereGeometry(0.25, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2);
+  const mitre = new THREE.SphereGeometry(0.32, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2);
   const mitreMesh = new THREE.Mesh(mitre);
-  mitreMesh.position.y = 0.85;
+  mitreMesh.position.y = 1.15;
   mitreMesh.scale.y = 1.8;
   group.add(mitreMesh);
   
   // Top ball
-  const topBall = new THREE.SphereGeometry(0.1, 16, 16);
+  const topBall = new THREE.SphereGeometry(0.14, 16, 16);
   const topBallMesh = new THREE.Mesh(topBall);
-  topBallMesh.position.y = 1.35;
+  topBallMesh.position.y = 1.8;
   group.add(topBallMesh);
   
   return mergeGeometries(group);
@@ -294,38 +294,38 @@ function createQueenGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.45, 0.5, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.5, 0.55, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.2, 0.4, 0.8, 24);
+  const body = new THREE.CylinderGeometry(0.25, 0.45, 1.0, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.55;
+  bodyMesh.position.y = 0.7;
   group.add(bodyMesh);
   
   // Crown base
-  const crownBase = new THREE.CylinderGeometry(0.25, 0.2, 0.2, 24);
+  const crownBase = new THREE.CylinderGeometry(0.32, 0.25, 0.25, 24);
   const crownBaseMesh = new THREE.Mesh(crownBase);
-  crownBaseMesh.position.y = 1.05;
+  crownBaseMesh.position.y = 1.325;
   group.add(crownBaseMesh);
   
   // Crown points
   for (let i = 0; i < 8; i++) {
-    const point = new THREE.ConeGeometry(0.06, 0.25, 8);
+    const point = new THREE.ConeGeometry(0.08, 0.35, 8);
     const pointMesh = new THREE.Mesh(point);
     const angle = (i / 8) * Math.PI * 2;
-    pointMesh.position.x = Math.cos(angle) * 0.18;
-    pointMesh.position.z = Math.sin(angle) * 0.18;
-    pointMesh.position.y = 1.3;
+    pointMesh.position.x = Math.cos(angle) * 0.23;
+    pointMesh.position.z = Math.sin(angle) * 0.23;
+    pointMesh.position.y = 1.675;
     group.add(pointMesh);
   }
   
   // Top ball
-  const topBall = new THREE.SphereGeometry(0.12, 16, 16);
+  const topBall = new THREE.SphereGeometry(0.15, 16, 16);
   const topBallMesh = new THREE.Mesh(topBall);
-  topBallMesh.position.y = 1.5;
+  topBallMesh.position.y = 1.95;
   group.add(topBallMesh);
   
   return mergeGeometries(group);
@@ -335,33 +335,33 @@ function createKingGeometry() {
   const group = new THREE.Group();
   
   // Base
-  const base = new THREE.CylinderGeometry(0.45, 0.5, 0.15, 24);
+  const base = new THREE.CylinderGeometry(0.5, 0.55, 0.2, 24);
   const baseMesh = new THREE.Mesh(base);
-  baseMesh.position.y = 0.075;
+  baseMesh.position.y = 0.1;
   group.add(baseMesh);
   
   // Body
-  const body = new THREE.CylinderGeometry(0.2, 0.4, 0.9, 24);
+  const body = new THREE.CylinderGeometry(0.25, 0.45, 1.1, 24);
   const bodyMesh = new THREE.Mesh(body);
-  bodyMesh.position.y = 0.6;
+  bodyMesh.position.y = 0.75;
   group.add(bodyMesh);
   
   // Crown base
-  const crownBase = new THREE.CylinderGeometry(0.28, 0.2, 0.2, 24);
+  const crownBase = new THREE.CylinderGeometry(0.35, 0.25, 0.25, 24);
   const crownBaseMesh = new THREE.Mesh(crownBase);
-  crownBaseMesh.position.y = 1.15;
+  crownBaseMesh.position.y = 1.425;
   group.add(crownBaseMesh);
   
   // Cross vertical
-  const crossV = new THREE.BoxGeometry(0.1, 0.4, 0.1);
+  const crossV = new THREE.BoxGeometry(0.12, 0.5, 0.12);
   const crossVMesh = new THREE.Mesh(crossV);
-  crossVMesh.position.y = 1.5;
+  crossVMesh.position.y = 1.875;
   group.add(crossVMesh);
   
   // Cross horizontal
-  const crossH = new THREE.BoxGeometry(0.3, 0.1, 0.1);
+  const crossH = new THREE.BoxGeometry(0.38, 0.12, 0.12);
   const crossHMesh = new THREE.Mesh(crossH);
-  crossHMesh.position.y = 1.55;
+  crossHMesh.position.y = 1.95;
   group.add(crossHMesh);
   
   return mergeGeometries(group);
@@ -625,7 +625,7 @@ export default function ChessBoard3D({
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight.position.set(5, 10, 5);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
@@ -723,7 +723,7 @@ export default function ChessBoard3D({
           
           mesh.position.x = (colIndex - 3.5) * SQUARE_SIZE;
           mesh.position.z = (rowIndex - 3.5) * SQUARE_SIZE;
-          mesh.position.y = 0.05;
+          mesh.position.y = 0.1;
           mesh.scale.set(PIECE_SCALE, PIECE_SCALE, PIECE_SCALE);
           mesh.castShadow = true;
           mesh.userData = { row: rowIndex, col: colIndex, type: 'piece' };
