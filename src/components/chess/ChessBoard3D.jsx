@@ -369,44 +369,88 @@ function createKingGeometry() {
 
 function mergeGeometries(group) {
   const geometries = [];
+  
   group.traverse((child) => {
-    if (child.geometry) {
-      const cloned = child.geometry.clone();
-      cloned.applyMatrix4(child.matrix);
+    if (child.isMesh && child.geometry) {
+      const geom = child.geometry.clone();
       child.updateWorldMatrix(true, false);
-      cloned.applyMatrix4(child.matrixWorld);
-      geometries.push(cloned);
+      geom.applyMatrix4(child.matrixWorld);
+      geometries.push(geom);
     }
   });
   
-  // Simple merge by using the first geometry if we can't merge
-  if (geometries.length === 0) return new THREE.SphereGeometry(0.3, 16, 16);
+  if (geometries.length === 0) {
+    return new THREE.SphereGeometry(0.3, 16, 16);
+  }
   
-  // For simplicity, return a combined geometry using BufferGeometryUtils approach
-  const combined = new THREE.BufferGeometry();
-  const positions = [];
-  const normals = [];
+  if (geometries.length === 1) {
+    return geometries[0];
+  }
+  
+  // Merge geometries properly
+  let totalVertices = 0;
+  let totalIndices = 0;
   
   geometries.forEach(geom => {
-    const pos = geom.getAttribute('position');
-    const norm = geom.getAttribute('normal');
-    if (pos) {
-      for (let i = 0; i < pos.count; i++) {
-        positions.push(pos.getX(i), pos.getY(i), pos.getZ(i));
-        if (norm) {
-          normals.push(norm.getX(i), norm.getY(i), norm.getZ(i));
-        } else {
-          normals.push(0, 1, 0);
-        }
-      }
+    if (!geom.index) {
+      geom.setIndex(null);
+    }
+    totalVertices += geom.getAttribute('position').count;
+    if (geom.index) {
+      totalIndices += geom.index.count;
     }
   });
   
-  combined.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  combined.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-  combined.computeVertexNormals();
+  const mergedGeometry = new THREE.BufferGeometry();
+  const positionArray = new Float32Array(totalVertices * 3);
+  const normalArray = new Float32Array(totalVertices * 3);
+  const indices = [];
   
-  return combined;
+  let vertexOffset = 0;
+  let indexOffset = 0;
+  
+  geometries.forEach(geom => {
+    const positions = geom.getAttribute('position');
+    const normals = geom.getAttribute('normal');
+    
+    // Copy positions
+    for (let i = 0; i < positions.count; i++) {
+      positionArray[(vertexOffset + i) * 3] = positions.getX(i);
+      positionArray[(vertexOffset + i) * 3 + 1] = positions.getY(i);
+      positionArray[(vertexOffset + i) * 3 + 2] = positions.getZ(i);
+    }
+    
+    // Copy normals
+    if (normals) {
+      for (let i = 0; i < normals.count; i++) {
+        normalArray[(vertexOffset + i) * 3] = normals.getX(i);
+        normalArray[(vertexOffset + i) * 3 + 1] = normals.getY(i);
+        normalArray[(vertexOffset + i) * 3 + 2] = normals.getZ(i);
+      }
+    }
+    
+    // Copy indices
+    if (geom.index) {
+      for (let i = 0; i < geom.index.count; i++) {
+        indices.push(geom.index.getX(i) + vertexOffset);
+      }
+    } else {
+      // Create indices if not present
+      for (let i = 0; i < positions.count; i++) {
+        indices.push(vertexOffset + i);
+      }
+    }
+    
+    vertexOffset += positions.count;
+  });
+  
+  mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+  mergedGeometry.setAttribute('normal', new THREE.BufferAttribute(normalArray, 3));
+  mergedGeometry.setIndex(indices);
+  mergedGeometry.computeVertexNormals();
+  mergedGeometry.computeBoundingSphere();
+  
+  return mergedGeometry;
 }
 
 export default function ChessBoard3D({ 
@@ -438,12 +482,14 @@ export default function ChessBoard3D({
           white: new THREE.MeshStandardMaterial({ 
             color: 0xd4a574, 
             metalness: 0.1, 
-            roughness: 0.7 
+            roughness: 0.7,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0x4a2f1a, 
             metalness: 0.1, 
-            roughness: 0.7 
+            roughness: 0.7,
+            flatShading: false
           })
         };
       case 'marble':
@@ -452,13 +498,15 @@ export default function ChessBoard3D({
             color: 0xf5f5f5, 
             metalness: 0.2, 
             roughness: 0.3,
-            envMapIntensity: 1.5
+            envMapIntensity: 1.5,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0x1a1a1a, 
             metalness: 0.2, 
             roughness: 0.3,
-            envMapIntensity: 1.5
+            envMapIntensity: 1.5,
+            flatShading: false
           })
         };
       case 'metal':
@@ -466,12 +514,14 @@ export default function ChessBoard3D({
           white: new THREE.MeshStandardMaterial({ 
             color: 0xc0c0c0, 
             metalness: 0.9, 
-            roughness: 0.2 
+            roughness: 0.2,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0x2a2a2a, 
             metalness: 0.9, 
-            roughness: 0.2 
+            roughness: 0.2,
+            flatShading: false
           })
         };
       case 'glass':
@@ -502,12 +552,14 @@ export default function ChessBoard3D({
           white: new THREE.MeshStandardMaterial({ 
             color: 0x9e9e9e, 
             metalness: 0.1, 
-            roughness: 0.9 
+            roughness: 0.9,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0x212121, 
             metalness: 0.1, 
-            roughness: 0.9 
+            roughness: 0.9,
+            flatShading: false
           })
         };
       case 'gold':
@@ -517,12 +569,14 @@ export default function ChessBoard3D({
             metalness: 0.8, 
             roughness: 0.2,
             emissive: 0x332200,
-            emissiveIntensity: 0.2
+            emissiveIntensity: 0.2,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0xe8e8e8, 
             metalness: 0.9, 
-            roughness: 0.2 
+            roughness: 0.2,
+            flatShading: false
           })
         };
       default:
@@ -530,12 +584,14 @@ export default function ChessBoard3D({
           white: new THREE.MeshStandardMaterial({ 
             color: 0xf5f5dc, 
             metalness: 0.3, 
-            roughness: 0.4 
+            roughness: 0.4,
+            flatShading: false
           }),
           black: new THREE.MeshStandardMaterial({ 
             color: 0x2d2d2d, 
             metalness: 0.3, 
-            roughness: 0.4 
+            roughness: 0.4,
+            flatShading: false
           })
         };
     }
@@ -603,11 +659,17 @@ export default function ChessBoard3D({
     cameraRef.current = camera;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true
+    });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -622,10 +684,10 @@ export default function ChessBoard3D({
     controlsRef.current = controls;
 
     // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(5, 10, 5);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
@@ -636,10 +698,15 @@ export default function ChessBoard3D({
     directionalLight.shadow.camera.right = 10;
     directionalLight.shadow.camera.top = 10;
     directionalLight.shadow.camera.bottom = -10;
+    directionalLight.shadow.bias = -0.0001;
     scene.add(directionalLight);
 
-    const pointLight = new THREE.PointLight(0x6c63ff, 0.3);
-    pointLight.position.set(-5, 8, -5);
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight2.position.set(-5, 8, -5);
+    scene.add(directionalLight2);
+
+    const pointLight = new THREE.PointLight(0x6c63ff, 0.5);
+    pointLight.position.set(0, 12, 0);
     scene.add(pointLight);
 
     // Create board
