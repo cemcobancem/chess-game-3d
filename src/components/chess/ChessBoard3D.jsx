@@ -738,13 +738,12 @@ export default function ChessBoard3D({
     boardGroup.add(edge);
 
     // Add board notation (letters and numbers)
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = 256;
-    canvas.height = 256;
-    
     const createLabel = (text) => {
-      context.clearRect(0, 0, 256, 256);
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.width = 256;
+      canvas.height = 256;
+      
       context.fillStyle = '#ffffff';
       context.font = 'bold 180px Arial';
       context.textAlign = 'center';
