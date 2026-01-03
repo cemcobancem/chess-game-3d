@@ -5,6 +5,7 @@ import GameControls from '@/components/chess/GameControls';
 import GameStatus from '@/components/chess/GameStatus';
 import MoveHistory from '@/components/chess/MoveHistory';
 import PawnPromotion from '@/components/chess/PawnPromotion';
+import PieceCustomization from '@/components/chess/PieceCustomization';
 import {
   createInitialBoard,
   cloneBoard,
@@ -39,6 +40,8 @@ export default function ChessPage() {
   const [showPromotion, setShowPromotion] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [boardHistory, setBoardHistory] = useState([]);
+  const [pieceMaterial, setPieceMaterial] = useState('wood');
+  const [pieceStyle, setPieceStyle] = useState('classic');
   
   const playerColor = COLORS.WHITE;
   const aiColor = COLORS.BLACK;
@@ -314,6 +317,8 @@ export default function ChessPage() {
                 onSquareClick={handleSquareClick}
                 lastMove={lastMove}
                 isThinking={isThinking}
+                material={pieceMaterial}
+                style={pieceStyle}
               />
             </div>
             
@@ -335,6 +340,13 @@ export default function ChessPage() {
               currentTurn={currentTurn}
               gameStatus={gameStatus}
               playerColor={playerColor}
+            />
+            
+            <PieceCustomization
+              material={pieceMaterial}
+              style={pieceStyle}
+              onMaterialChange={setPieceMaterial}
+              onStyleChange={setPieceStyle}
             />
             
             <GameControls

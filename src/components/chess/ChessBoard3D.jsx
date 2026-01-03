@@ -8,7 +8,14 @@ const SQUARE_SIZE = 1;
 const PIECE_SCALE = 0.35;
 
 // 3D piece geometries using basic shapes
-const createPieceGeometry = (type) => {
+const createPieceGeometry = (type, style = 'classic') => {
+  if (style === 'modern') {
+    return createModernPieceGeometry(type);
+  } else if (style === 'minimal') {
+    return createMinimalPieceGeometry(type);
+  }
+  
+  // Classic style
   switch (type) {
     case PIECES.PAWN:
       return createPawnGeometry();
@@ -22,6 +29,131 @@ const createPieceGeometry = (type) => {
       return createQueenGeometry();
     case PIECES.KING:
       return createKingGeometry();
+    default:
+      return new THREE.SphereGeometry(0.3, 16, 16);
+  }
+};
+
+// Modern style pieces - angular and geometric
+const createModernPieceGeometry = (type) => {
+  const group = new THREE.Group();
+  
+  switch (type) {
+    case PIECES.PAWN:
+      const pawnBase = new THREE.ConeGeometry(0.3, 0.4, 6);
+      const pawnTop = new THREE.SphereGeometry(0.2, 8, 8);
+      const pawnBaseMesh = new THREE.Mesh(pawnBase);
+      pawnBaseMesh.position.y = 0.2;
+      const pawnTopMesh = new THREE.Mesh(pawnTop);
+      pawnTopMesh.position.y = 0.5;
+      group.add(pawnBaseMesh, pawnTopMesh);
+      break;
+    case PIECES.ROOK:
+      const rookBody = new THREE.BoxGeometry(0.5, 0.8, 0.5);
+      const rookBodyMesh = new THREE.Mesh(rookBody);
+      rookBodyMesh.position.y = 0.4;
+      group.add(rookBodyMesh);
+      for (let i = 0; i < 4; i++) {
+        const battlement = new THREE.BoxGeometry(0.12, 0.15, 0.12);
+        const battlementMesh = new THREE.Mesh(battlement);
+        const angle = (i / 4) * Math.PI * 2;
+        battlementMesh.position.x = Math.cos(angle) * 0.2;
+        battlementMesh.position.z = Math.sin(angle) * 0.2;
+        battlementMesh.position.y = 0.88;
+        group.add(battlementMesh);
+      }
+      break;
+    case PIECES.KNIGHT:
+      const knightBody = new THREE.BoxGeometry(0.4, 0.6, 0.4);
+      const knightBodyMesh = new THREE.Mesh(knightBody);
+      knightBodyMesh.position.y = 0.3;
+      const knightHead = new THREE.BoxGeometry(0.3, 0.4, 0.5);
+      const knightHeadMesh = new THREE.Mesh(knightHead);
+      knightHeadMesh.position.y = 0.7;
+      knightHeadMesh.position.z = 0.1;
+      knightHeadMesh.rotation.x = -0.2;
+      group.add(knightBodyMesh, knightHeadMesh);
+      break;
+    case PIECES.BISHOP:
+      const bishopBody = new THREE.ConeGeometry(0.3, 1, 6);
+      const bishopBodyMesh = new THREE.Mesh(bishopBody);
+      bishopBodyMesh.position.y = 0.5;
+      const bishopTop = new THREE.SphereGeometry(0.15, 8, 8);
+      const bishopTopMesh = new THREE.Mesh(bishopTop);
+      bishopTopMesh.position.y = 1.05;
+      group.add(bishopBodyMesh, bishopTopMesh);
+      break;
+    case PIECES.QUEEN:
+      const queenBody = new THREE.ConeGeometry(0.35, 0.9, 8);
+      const queenBodyMesh = new THREE.Mesh(queenBody);
+      queenBodyMesh.position.y = 0.45;
+      group.add(queenBodyMesh);
+      for (let i = 0; i < 8; i++) {
+        const spike = new THREE.ConeGeometry(0.05, 0.25, 4);
+        const spikeMesh = new THREE.Mesh(spike);
+        const angle = (i / 8) * Math.PI * 2;
+        spikeMesh.position.x = Math.cos(angle) * 0.22;
+        spikeMesh.position.z = Math.sin(angle) * 0.22;
+        spikeMesh.position.y = 1.05;
+        group.add(spikeMesh);
+      }
+      break;
+    case PIECES.KING:
+      const kingBody = new THREE.ConeGeometry(0.35, 1, 8);
+      const kingBodyMesh = new THREE.Mesh(kingBody);
+      kingBodyMesh.position.y = 0.5;
+      const crossV = new THREE.BoxGeometry(0.08, 0.35, 0.08);
+      const crossVMesh = new THREE.Mesh(crossV);
+      crossVMesh.position.y = 1.2;
+      const crossH = new THREE.BoxGeometry(0.25, 0.08, 0.08);
+      const crossHMesh = new THREE.Mesh(crossH);
+      crossHMesh.position.y = 1.25;
+      group.add(kingBodyMesh, crossVMesh, crossHMesh);
+      break;
+  }
+  
+  return mergeGeometries(group);
+};
+
+// Minimal style pieces - simple and clean
+const createMinimalPieceGeometry = (type) => {
+  switch (type) {
+    case PIECES.PAWN:
+      return new THREE.SphereGeometry(0.25, 16, 16);
+    case PIECES.ROOK:
+      return new THREE.BoxGeometry(0.4, 0.7, 0.4);
+    case PIECES.KNIGHT:
+      const knightGroup = new THREE.Group();
+      const knightCyl = new THREE.CylinderGeometry(0.2, 0.25, 0.6, 16);
+      const knightHead = new THREE.SphereGeometry(0.18, 16, 16);
+      const knightCylMesh = new THREE.Mesh(knightCyl);
+      knightCylMesh.position.y = 0.3;
+      const knightHeadMesh = new THREE.Mesh(knightHead);
+      knightHeadMesh.position.y = 0.7;
+      knightGroup.add(knightCylMesh, knightHeadMesh);
+      return mergeGeometries(knightGroup);
+    case PIECES.BISHOP:
+      return new THREE.ConeGeometry(0.25, 0.9, 16);
+    case PIECES.QUEEN:
+      const queenGroup = new THREE.Group();
+      const queenCyl = new THREE.CylinderGeometry(0.18, 0.28, 0.8, 16);
+      const queenSphere = new THREE.SphereGeometry(0.2, 16, 16);
+      const queenCylMesh = new THREE.Mesh(queenCyl);
+      queenCylMesh.position.y = 0.4;
+      const queenSphereMesh = new THREE.Mesh(queenSphere);
+      queenSphereMesh.position.y = 0.9;
+      queenGroup.add(queenCylMesh, queenSphereMesh);
+      return mergeGeometries(queenGroup);
+    case PIECES.KING:
+      const kingGroup = new THREE.Group();
+      const kingCyl = new THREE.CylinderGeometry(0.18, 0.28, 0.9, 16);
+      const kingCross = new THREE.BoxGeometry(0.3, 0.08, 0.08);
+      const kingCylMesh = new THREE.Mesh(kingCyl);
+      kingCylMesh.position.y = 0.45;
+      const kingCrossMesh = new THREE.Mesh(kingCross);
+      kingCrossMesh.position.y = 1;
+      kingGroup.add(kingCylMesh, kingCrossMesh);
+      return mergeGeometries(kingGroup);
     default:
       return new THREE.SphereGeometry(0.3, 16, 16);
   }
@@ -283,7 +415,9 @@ export default function ChessBoard3D({
   validMoves, 
   onSquareClick, 
   lastMove,
-  isThinking 
+  isThinking,
+  material = 'wood',
+  style = 'classic'
 }) {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
@@ -296,18 +430,121 @@ export default function ChessBoard3D({
   const raycasterRef = useRef(new THREE.Raycaster());
   const mouseRef = useRef(new THREE.Vector2());
 
+  // Create piece materials based on selection
+  const getPieceMaterials = useCallback(() => {
+    switch (material) {
+      case 'wood':
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0xd4a574, 
+            metalness: 0.1, 
+            roughness: 0.7 
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0x4a2f1a, 
+            metalness: 0.1, 
+            roughness: 0.7 
+          })
+        };
+      case 'marble':
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0xf5f5f5, 
+            metalness: 0.2, 
+            roughness: 0.3,
+            envMapIntensity: 1.5
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0x1a1a1a, 
+            metalness: 0.2, 
+            roughness: 0.3,
+            envMapIntensity: 1.5
+          })
+        };
+      case 'metal':
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0xc0c0c0, 
+            metalness: 0.9, 
+            roughness: 0.2 
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0x2a2a2a, 
+            metalness: 0.9, 
+            roughness: 0.2 
+          })
+        };
+      case 'glass':
+        return {
+          white: new THREE.MeshPhysicalMaterial({ 
+            color: 0xffffff, 
+            metalness: 0,
+            roughness: 0.1,
+            transparent: true,
+            opacity: 0.5,
+            transmission: 0.9,
+            thickness: 0.5,
+            ior: 1.5
+          }),
+          black: new THREE.MeshPhysicalMaterial({ 
+            color: 0x333333, 
+            metalness: 0,
+            roughness: 0.1,
+            transparent: true,
+            opacity: 0.7,
+            transmission: 0.7,
+            thickness: 0.5,
+            ior: 1.5
+          })
+        };
+      case 'stone':
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0x9e9e9e, 
+            metalness: 0.1, 
+            roughness: 0.9 
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0x212121, 
+            metalness: 0.1, 
+            roughness: 0.9 
+          })
+        };
+      case 'gold':
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0xffd700, 
+            metalness: 0.8, 
+            roughness: 0.2,
+            emissive: 0x332200,
+            emissiveIntensity: 0.2
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0xe8e8e8, 
+            metalness: 0.9, 
+            roughness: 0.2 
+          })
+        };
+      default:
+        return {
+          white: new THREE.MeshStandardMaterial({ 
+            color: 0xf5f5dc, 
+            metalness: 0.3, 
+            roughness: 0.4 
+          }),
+          black: new THREE.MeshStandardMaterial({ 
+            color: 0x2d2d2d, 
+            metalness: 0.3, 
+            roughness: 0.4 
+          })
+        };
+    }
+  }, [material]);
+
   // Create materials
   const materials = useMemo(() => ({
-    whitePiece: new THREE.MeshStandardMaterial({ 
-      color: 0xf5f5dc, 
-      metalness: 0.3, 
-      roughness: 0.4 
-    }),
-    blackPiece: new THREE.MeshStandardMaterial({ 
-      color: 0x2d2d2d, 
-      metalness: 0.3, 
-      roughness: 0.4 
-    }),
+    whitePiece: getPieceMaterials().white,
+    blackPiece: getPieceMaterials().black,
     lightSquare: new THREE.MeshStandardMaterial({ 
       color: 0xe8d4b8, 
       metalness: 0.1, 
@@ -344,7 +581,7 @@ export default function ChessBoard3D({
       metalness: 0.2, 
       roughness: 0.6 
     })
-  }), []);
+  }), [getPieceMaterials]);
 
   // Initialize scene
   useEffect(() => {
@@ -480,7 +717,7 @@ export default function ChessBoard3D({
     board.forEach((row, rowIndex) => {
       row.forEach((piece, colIndex) => {
         if (piece) {
-          const geometry = createPieceGeometry(piece.type);
+          const geometry = createPieceGeometry(piece.type, style);
           const material = piece.color === COLORS.WHITE ? materials.whitePiece : materials.blackPiece;
           const mesh = new THREE.Mesh(geometry, material.clone());
           
@@ -496,7 +733,7 @@ export default function ChessBoard3D({
         }
       });
     });
-  }, [board, materials]);
+  }, [board, materials, style]);
 
   // Update highlights
   useEffect(() => {
