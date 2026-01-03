@@ -321,13 +321,23 @@ export default function ChessPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4">
-        <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr] gap-6">
-          {/* Left Sidebar - Captured White Pieces */}
-          <div className="hidden xl:block">
+        <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-6">
+          {/* Left Sidebar */}
+          <div className="hidden xl:block space-y-4">
             <CapturedPieces 
               capturedPieces={capturedPieces} 
               color={COLORS.WHITE}
               label="Captured White"
+            />
+            <CapturedPieces 
+              capturedPieces={capturedPieces} 
+              color={COLORS.BLACK}
+              label="Captured Black"
+            />
+            <GameStatus
+              currentTurn={currentTurn}
+              gameStatus={gameStatus}
+              playerColor={playerColor}
             />
           </div>
 
@@ -349,26 +359,6 @@ export default function ChessPage() {
                     <SheetTitle className="text-white text-xl">Game Settings</SheetTitle>
                   </SheetHeader>
                   <div className="space-y-4 mt-6">
-                    {/* Captured pieces */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <CapturedPieces 
-                        capturedPieces={capturedPieces} 
-                        color={COLORS.WHITE}
-                        label="Captured White"
-                      />
-                      <CapturedPieces 
-                        capturedPieces={capturedPieces} 
-                        color={COLORS.BLACK}
-                        label="Captured Black"
-                      />
-                    </div>
-
-                    <GameStatus
-                      currentTurn={currentTurn}
-                      gameStatus={gameStatus}
-                      playerColor={playerColor}
-                    />
-
                     <GameControls
                       difficulty={difficulty}
                       onDifficultyChange={setDifficulty}
@@ -410,15 +400,25 @@ export default function ChessPage() {
                 />
             </div>
             
-            {/* Quick controls for mobile */}
-            <div className="lg:hidden mt-4 flex gap-3 justify-center">
-              <Button
-                onClick={handleNewGame}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                New Game
-              </Button>
+            {/* Quick controls and status for mobile */}
+            <div className="xl:hidden mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <CapturedPieces 
+                  capturedPieces={capturedPieces} 
+                  color={COLORS.WHITE}
+                  label="Captured White"
+                />
+                <CapturedPieces 
+                  capturedPieces={capturedPieces} 
+                  color={COLORS.BLACK}
+                  label="Captured Black"
+                />
+              </div>
+              <GameStatus
+                currentTurn={currentTurn}
+                gameStatus={gameStatus}
+                playerColor={playerColor}
+              />
             </div>
           </div>
 
