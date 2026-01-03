@@ -51,6 +51,47 @@ export default function ChessPage() {
   const playerColor = COLORS.WHITE;
   const aiColor = COLORS.BLACK;
 
+  // Load saved game on mount
+  useEffect(() => {
+    const savedGame = localStorage.getItem('chessGame');
+    if (savedGame) {
+      try {
+        const data = JSON.parse(savedGame);
+        setBoard(data.board);
+        setGameState(data.gameState);
+        setCurrentTurn(data.currentTurn);
+        setMoveHistory(data.moveHistory || []);
+        setLastMove(data.lastMove || null);
+        setCapturedPieces(data.capturedPieces || []);
+        setBoardHistory(data.boardHistory || []);
+        setDifficulty(data.difficulty || 5);
+        setPieceMaterial(data.pieceMaterial || 'wood');
+        setPieceStyle(data.pieceStyle || 'classic');
+        setBoardType(data.boardType || 'classic');
+      } catch (e) {
+        console.error('Failed to load saved game:', e);
+      }
+    }
+  }, []);
+
+  // Save game state whenever it changes
+  useEffect(() => {
+    const gameData = {
+      board,
+      gameState,
+      currentTurn,
+      moveHistory,
+      lastMove,
+      capturedPieces,
+      boardHistory,
+      difficulty,
+      pieceMaterial,
+      pieceStyle,
+      boardType
+    };
+    localStorage.setItem('chessGame', JSON.stringify(gameData));
+  }, [board, gameState, currentTurn, moveHistory, lastMove, capturedPieces, boardHistory, difficulty, pieceMaterial, pieceStyle, boardType]);
+
   // Check game status after each move
   useEffect(() => {
     const status = getGameStatus(board, currentTurn, gameState);
@@ -266,6 +307,7 @@ export default function ChessPage() {
     setGameStatus({ status: 'playing', winner: null });
     setBoardHistory([]);
     setCapturedPieces([]);
+    localStorage.removeItem('chessGame');
   }, []);
 
   const handleUndo = useCallback(() => {
