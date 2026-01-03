@@ -19,7 +19,8 @@ import {
   COLORS
 } from '@/components/chess/ChessEngine';
 import { Button } from "@/components/ui/button";
-import { Maximize2, Minimize2, RotateCcw } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Maximize2, Minimize2, RotateCcw, Settings } from "lucide-react";
 
 const initialGameState = {
   whiteCastle: { kingSide: true, queenSide: true },
@@ -332,6 +333,69 @@ export default function ChessPage() {
 
           {/* Chess Board */}
           <div className="relative">
+            {/* Settings Button */}
+            <div className="absolute top-4 right-4 z-20">
+              <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    size="icon"
+                    className="bg-gray-900/95 border-white/10 text-white hover:bg-white/10 shadow-2xl backdrop-blur"
+                  >
+                    <Settings className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[400px] sm:w-[450px] bg-gradient-to-br from-gray-950 to-gray-900 border-white/10 overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle className="text-white text-xl">Game Settings</SheetTitle>
+                  </SheetHeader>
+                  <div className="space-y-4 mt-6">
+                    {/* Captured pieces */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <CapturedPieces 
+                        capturedPieces={capturedPieces} 
+                        color={COLORS.WHITE}
+                        label="Captured White"
+                      />
+                      <CapturedPieces 
+                        capturedPieces={capturedPieces} 
+                        color={COLORS.BLACK}
+                        label="Captured Black"
+                      />
+                    </div>
+
+                    <GameStatus
+                      currentTurn={currentTurn}
+                      gameStatus={gameStatus}
+                      playerColor={playerColor}
+                    />
+
+                    <GameControls
+                      difficulty={difficulty}
+                      onDifficultyChange={setDifficulty}
+                      onNewGame={handleNewGame}
+                      onUndo={handleUndo}
+                      onResign={handleResign}
+                      canUndo={boardHistory.length >= 2}
+                      gameOver={gameStatus.status === 'checkmate' || gameStatus.status === 'stalemate'}
+                    />
+
+                    <PieceCustomization
+                      material={pieceMaterial}
+                      style={pieceStyle}
+                      boardType={boardType}
+                      onMaterialChange={setPieceMaterial}
+                      onStyleChange={setPieceStyle}
+                      onBoardTypeChange={setBoardType}
+                    />
+
+                    <div className="h-[200px]">
+                      <MoveHistory moves={moveHistory} />
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+
             <div className="aspect-square w-full max-w-[700px] mx-auto rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 border border-white/10">
               <ChessBoard3D
                 board={board}
@@ -358,60 +422,7 @@ export default function ChessPage() {
             </div>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-4 lg:space-y-6">
-            {/* Captured pieces for mobile/tablet */}
-            <div className="xl:hidden grid grid-cols-2 gap-4">
-              <CapturedPieces 
-                capturedPieces={capturedPieces} 
-                color={COLORS.WHITE}
-                label="Captured White"
-              />
-              <CapturedPieces 
-                capturedPieces={capturedPieces} 
-                color={COLORS.BLACK}
-                label="Captured Black"
-              />
-            </div>
 
-            {/* Captured Black pieces for desktop */}
-            <div className="hidden xl:block">
-              <CapturedPieces 
-                capturedPieces={capturedPieces} 
-                color={COLORS.BLACK}
-                label="Captured Black"
-              />
-            </div>
-
-            <GameStatus
-              currentTurn={currentTurn}
-              gameStatus={gameStatus}
-              playerColor={playerColor}
-            />
-            
-            <PieceCustomization
-              material={pieceMaterial}
-              style={pieceStyle}
-              boardType={boardType}
-              onMaterialChange={setPieceMaterial}
-              onStyleChange={setPieceStyle}
-              onBoardTypeChange={setBoardType}
-            />
-            
-            <GameControls
-              difficulty={difficulty}
-              onDifficultyChange={setDifficulty}
-              onNewGame={handleNewGame}
-              onUndo={handleUndo}
-              onResign={handleResign}
-              canUndo={boardHistory.length >= 2}
-              gameOver={gameStatus.status === 'checkmate' || gameStatus.status === 'stalemate'}
-            />
-            
-            <div className="h-[200px] lg:h-[250px]">
-              <MoveHistory moves={moveHistory} />
-            </div>
-          </div>
         </div>
       </main>
 
