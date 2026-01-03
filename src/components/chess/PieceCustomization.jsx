@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Palette, Box } from "lucide-react";
+import { Palette, Box, Grid3x3 } from "lucide-react";
 
 const MATERIALS = [
   { id: 'wood', name: 'Wood', icon: '🌳' },
@@ -15,6 +15,15 @@ const STYLES = [
   { id: 'classic', name: 'Classic', icon: '♔' },
   { id: 'modern', name: 'Modern', icon: '▲' },
   { id: 'minimal', name: 'Minimal', icon: '●' }
+];
+
+const BOARD_TYPES = [
+  { id: 'classic', name: 'Classic Wood', icon: '🌰' },
+  { id: 'marble', name: 'Marble', icon: '⬜' },
+  { id: 'green', name: 'Tournament Green', icon: '🟢' },
+  { id: 'blue', name: 'Ocean Blue', icon: '🌊' },
+  { id: 'dark', name: 'Dark Mode', icon: '🌑' },
+  { id: 'cream', name: 'Cream & Brown', icon: '☕' }
 ];
 
 export default function PieceCustomization({ material, style, boardType, onMaterialChange, onStyleChange, onBoardTypeChange }) {
@@ -70,6 +79,33 @@ export default function PieceCustomization({ material, style, boardType, onMater
                   <div className="flex items-center gap-3">
                     <span className="text-lg">{s.icon}</span>
                     <span>{s.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Board Type Selector */}
+        <div className="space-y-2">
+          <label className="text-white/60 text-xs uppercase tracking-wider flex items-center gap-2">
+            <Grid3x3 className="w-3 h-3" />
+            Board Type
+          </label>
+          <Select value={boardType} onValueChange={onBoardTypeChange}>
+            <SelectTrigger className="bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-900 border-white/10">
+              {BOARD_TYPES.map(type => (
+                <SelectItem 
+                  key={type.id} 
+                  value={type.id}
+                  className="text-white hover:bg-white/10 focus:bg-white/10"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">{type.icon}</span>
+                    <span>{type.name}</span>
                   </div>
                 </SelectItem>
               ))}
