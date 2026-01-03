@@ -45,6 +45,7 @@ export default function ChessPage() {
   const [pieceStyle, setPieceStyle] = useState('classic');
   const [boardType, setBoardType] = useState('classic');
   const [capturedPieces, setCapturedPieces] = useState([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   
   const playerColor = COLORS.WHITE;
   const aiColor = COLORS.BLACK;
@@ -319,7 +320,7 @@ export default function ChessPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4">
-        <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr_320px] lg:grid-cols-[1fr_320px] gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[240px_1fr] gap-6">
           {/* Left Sidebar - Captured White Pieces */}
           <div className="hidden xl:block">
             <CapturedPieces 
