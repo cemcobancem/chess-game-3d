@@ -362,109 +362,84 @@ export default function ChessPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto p-4">
-        <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-6">
-          {/* Left Sidebar */}
-          <div className="hidden xl:block space-y-4">
+      <main className="max-w-[1400px] mx-auto px-2 py-4">
+        <div className="flex flex-col items-center gap-4">
+          {/* Settings Button */}
+          <div className="self-end">
+            <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  size="icon"
+                  className="bg-gray-900/95 border-white/10 text-white hover:bg-white/10 shadow-2xl backdrop-blur"
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[400px] sm:w-[450px] bg-gradient-to-br from-gray-950 to-gray-900 border-white/10 overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle className="text-white text-xl">Game Settings</SheetTitle>
+                </SheetHeader>
+                <div className="space-y-4 mt-6">
+                  <GameControls
+                    difficulty={difficulty}
+                    onDifficultyChange={setDifficulty}
+                    onNewGame={handleNewGame}
+                    onUndo={handleUndo}
+                    onResign={handleResign}
+                    canUndo={boardHistory.length >= 2}
+                    gameOver={gameStatus.status === 'checkmate' || gameStatus.status === 'stalemate'}
+                  />
+
+                  <PieceCustomization
+                    material={pieceMaterial}
+                    style={pieceStyle}
+                    boardType={boardType}
+                    onMaterialChange={setPieceMaterial}
+                    onStyleChange={setPieceStyle}
+                    onBoardTypeChange={setBoardType}
+                  />
+
+                  <div className="h-[200px]">
+                    <MoveHistory moves={moveHistory} />
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Chess Board */}
+          <div className="w-full max-w-[900px] aspect-square rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 border border-white/10">
+            <ChessBoard3D
+              board={board}
+              selectedSquare={selectedSquare}
+              validMoves={validMoves}
+              onSquareClick={handleSquareClick}
+              lastMove={lastMove}
+              isThinking={isThinking}
+              material={pieceMaterial}
+              style={pieceStyle}
+              boardType={boardType}
+            />
+          </div>
+          
+          {/* Game Info Below Board */}
+          <div className="w-full max-w-[900px] grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
             <CapturedPieces 
               capturedPieces={capturedPieces} 
               color={COLORS.WHITE}
               label="Captured White"
-            />
-            <CapturedPieces 
-              capturedPieces={capturedPieces} 
-              color={COLORS.BLACK}
-              label="Captured Black"
             />
             <GameStatus
               currentTurn={currentTurn}
               gameStatus={gameStatus}
               playerColor={playerColor}
             />
+            <CapturedPieces 
+              capturedPieces={capturedPieces} 
+              color={COLORS.BLACK}
+              label="Captured Black"
+            />
           </div>
-
-          {/* Chess Board */}
-          <div className="relative">
-            {/* Settings Button */}
-            <div className="absolute top-4 right-4 z-20">
-              <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
-                <SheetTrigger asChild>
-                  <Button 
-                    size="icon"
-                    className="bg-gray-900/95 border-white/10 text-white hover:bg-white/10 shadow-2xl backdrop-blur"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[450px] bg-gradient-to-br from-gray-950 to-gray-900 border-white/10 overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle className="text-white text-xl">Game Settings</SheetTitle>
-                  </SheetHeader>
-                  <div className="space-y-4 mt-6">
-                    <GameControls
-                      difficulty={difficulty}
-                      onDifficultyChange={setDifficulty}
-                      onNewGame={handleNewGame}
-                      onUndo={handleUndo}
-                      onResign={handleResign}
-                      canUndo={boardHistory.length >= 2}
-                      gameOver={gameStatus.status === 'checkmate' || gameStatus.status === 'stalemate'}
-                    />
-
-                    <PieceCustomization
-                      material={pieceMaterial}
-                      style={pieceStyle}
-                      boardType={boardType}
-                      onMaterialChange={setPieceMaterial}
-                      onStyleChange={setPieceStyle}
-                      onBoardTypeChange={setBoardType}
-                    />
-
-                    <div className="h-[200px]">
-                      <MoveHistory moves={moveHistory} />
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-
-            <div className="aspect-square w-full max-w-[700px] mx-auto rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 border border-white/10">
-              <ChessBoard3D
-                board={board}
-                selectedSquare={selectedSquare}
-                validMoves={validMoves}
-                onSquareClick={handleSquareClick}
-                lastMove={lastMove}
-                isThinking={isThinking}
-                material={pieceMaterial}
-                style={pieceStyle}
-                boardType={boardType}
-                />
-            </div>
-            
-            {/* Quick controls and status for mobile */}
-            <div className="xl:hidden mt-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <CapturedPieces 
-                  capturedPieces={capturedPieces} 
-                  color={COLORS.WHITE}
-                  label="Captured White"
-                />
-                <CapturedPieces 
-                  capturedPieces={capturedPieces} 
-                  color={COLORS.BLACK}
-                  label="Captured Black"
-                />
-              </div>
-              <GameStatus
-                currentTurn={currentTurn}
-                gameStatus={gameStatus}
-                playerColor={playerColor}
-              />
-            </div>
-          </div>
-
-
         </div>
       </main>
 
