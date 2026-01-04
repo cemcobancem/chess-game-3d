@@ -362,7 +362,7 @@ export default function ChessPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1400px] mx-auto px-2 py-4">
+      <main className="max-w-[1600px] mx-auto px-1 py-4">
         <div className="flex flex-col items-center gap-4">
           {/* Settings Button */}
           <div className="self-end">
