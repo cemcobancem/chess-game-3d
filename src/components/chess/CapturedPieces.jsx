@@ -37,17 +37,18 @@ export default function CapturedPieces({ capturedPieces, color, label }) {
         )}
       </div>
       
-      <div className="min-h-[60px] flex flex-wrap gap-1 items-start">
+      <div className="min-h-[80px] flex flex-wrap gap-2 items-center justify-center">
         {sortedPieces.length === 0 ? (
-          <div className="text-white/20 text-xs italic w-full text-center py-4">
+          <div className="text-white/30 text-sm italic w-full text-center py-6">
             No captures yet
           </div>
         ) : (
           sortedPieces.map((piece, index) => (
             <div
               key={index}
-              className="text-3xl opacity-80 hover:opacity-100 transition-opacity"
+              className="text-4xl opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-200 drop-shadow-lg"
               style={{ color: piece.color === COLORS.WHITE ? '#f5f5dc' : '#2d2d2d' }}
+              title={`${piece.color === COLORS.WHITE ? 'White' : 'Black'} ${piece.type}`}
             >
               {PIECE_SYMBOLS[piece.type][piece.color]}
             </div>
